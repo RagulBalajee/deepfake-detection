@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*
+.venv/
+venv/
+ENV/
+
+# IDE / Tools
+.vscode/
+.idea/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Cache / Artifacts
+.cache/
+.pytest_cache/
+.mypy_cache/
+coverage/
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Data / Models (adjust as needed)
+data/
+models/
+checkpoints/
+artifacts/
+dataverse_files/dataset/
+SDFVD2.0*/
+*.mp4
+*.avi
+*.mov
+SDFVD Small-scale Deepfake Forgery Video Dataset/
+SDFVD Small-scale Deepfake Forgery Video Dataset/SDFVD.zip
+
+# Frontend
+node_modules/
+frontend/.cache/
+frontend/dist/
+frontend/build/
+
+# Media uploads
+uploads/
+
+# Misc
+*.swp
+*.swo

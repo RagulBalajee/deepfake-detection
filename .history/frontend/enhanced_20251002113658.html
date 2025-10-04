@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 AI-Powered Fake News & Deepfake Detection System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .upload-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .upload-section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .upload-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f7fafc;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+            font-weight: 500;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-upload {
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: #e6f3ff;
+        }
+
+        .file-upload i {
+            font-size: 3rem;
+            color: #a0aec0;
+            margin-bottom: 15px;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .results-section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .result-card {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .confidence-score {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .confidence-score.high-risk {
+            background: #e53e3e;
+        }
+
+        .confidence-score.medium-risk {
+            background: #f6ad55;
+        }
+
+        .confidence-score.low-risk {
+            background: #38a169;
+        }
+
+        .result-details {
+            margin-top: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .detail-value {
+            color: #2d3748;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .feature-description {
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .recommendations {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .recommendations h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .recommendation-item:last-child {
+            border-bottom: none;
+        }
+
+        .recommendation-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .recommendation-text {
+            color: #4a5568;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .success-message {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #38a169;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 AI-Powered Detection System</h1>
+            <p>Advanced fake news and deepfake detection with innovative verification features</p>
+        </div>
+
+        <div class="dashboard-stats" id="dashboardStats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalAnalyses">0</div>
+                <div class="stat-label">Total Analyses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="fakeDetectionRate">0%</div>
+                <div class="stat-label">Fake Detection Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="communityReports">0</div>
+                <div class="stat-label">Community Reports</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="verifiedSources">0</div>
+                <div class="stat-label">Verified Sources</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="upload-section">
+                <h2><i class="fas fa-upload"></i> Content Analysis</h2>
+                
+                <div class="upload-tabs">
+                    <button class="tab active" onclick="switchTab('text')">
+                        <i class="fas fa-file-text"></i> Text
+                    </button>
+                    <button class="tab" onclick="switchTab('image')">
+                        <i class="fas fa-image"></i> Image
+                    </button>
+                    <button class="tab" onclick="switchTab('video')">
+                        <i class="fas fa-video"></i> Video
+                    </button>
+                    <button class="tab" onclick="switchTab('audio')">
+                        <i class="fas fa-microphone"></i> Audio
+                    </button>
+                </div>
+
+                <div id="textTab" class="tab-content active">
+                    <div class="input-group">
+                        <label for="textInput">News Text or Article</label>
+                        <textarea id="textInput" rows="6" placeholder="Paste the news text or article content here..."></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="textLanguage">Language</label>
+                        <select id="textLanguage">
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="hi">Hindi</option>
+                            <option value="zh">Chinese</option>
+                            <option value="ar">Arabic</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="textSource">Source URL (Optional)</label>
+                        <input type="url" id="textSource" placeholder="https://example.com/article">
+                    </div>
+                </div>
+
+                <div id="imageTab" class="tab-content">
+                    <div class="file-upload" onclick="document.getElementById('imageFile').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Click to upload image or drag and drop</p>
+                        <p style="font-size: 0.9rem; color: #718096;">Supports JPG, PNG, GIF</p>
+                        <input type="file" id="imageFile" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="input-group">
+                        <label for="imageSource">Source URL (Optional)</label>
+                        <input type="url" id="imageSource" placeholder="https://example.com/image">
+                    </div>
+                </div>
+
+                <div id="videoTab" class="tab-content">
+                    <div class="file-upload" onclick="document.getElementById('videoFile').click()">
+                        <i class="fas fa-video"></i>
+                        <p>Click to upload video or drag and drop</p>
+                        <p style="font-size: 0.9rem; color: #718096;">Supports MP4, AVI, MOV</p>
+                        <input type="file" id="videoFile" accept="video/*" style="display: none;">
+                    </div>
+                    <div class="input-group">
+                        <label for="videoSource">Source URL (Optional)</label>
+                        <input type="url" id="videoSource" placeholder="https://example.com/video">
+                    </div>
+                </div>
+
+                <div id="audioTab" class="tab-content">
+                    <div class="file-upload" onclick="document.getElementById('audioFile').click()">
+                        <i class="fas fa-microphone"></i>
+                        <p>Click to upload audio or drag and drop</p>
+                        <p style="font-size: 0.9rem; color: #718096;">Supports MP3, WAV, M4A</p>
+                        <input type="file" id="audioFile" accept="audio/*" style="display: none;">
+                    </div>
+                    <div class="input-group">
+                        <label for="audioSource">Source URL (Optional)</label>
+                        <input type="url" id="audioSource" placeholder="https://example.com/audio">
+                    </div>
+                </div>
+
+                <button class="analyze-btn" onclick="analyzeContent()" id="analyzeBtn">
+                    <i class="fas fa-search"></i>
+                    Analyze Content
+                </button>
+            </div>
+
+            <div class="results-section">
+                <h2><i class="fas fa-chart-line"></i> Analysis Results</h2>
+                <div id="resultsContainer">
+                    <div style="text-align: center; padding: 40px; color: #718096;">
+                        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                        <p>Upload content to get started with analysis</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <div class="feature-title">Existence Verification</div>
+                <div class="feature-description">
+                    Cross-platform verification using Wikipedia, news APIs, government sources, and social signals
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <div class="feature-title">Cultural Context</div>
+                <div class="feature-description">
+                    Understand cultural bias and regional misinterpretation across different languages and cultures
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <div class="feature-title">Credibility Scoring</div>
+                <div class="feature-description">
+                    AI-based trust scoring for publishers, accounts, and sources with historical accuracy analysis
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Explainable AI</div>
+                <div class="feature-description">
+                    Detailed explanations of why content was flagged with visual evidence and technical details
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⛓️</div>
+                <div class="feature-title">Blockchain Verification</div>
+                <div class="feature-description">
+                    Immutable content hashing and timestamp verification for authenticity and tamper detection
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-title">Psychological Analysis</div>
+                <div class="feature-description">
+                    Detect emotional manipulation, persuasion techniques, and cognitive bias indicators
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <div class="feature-title">Cross-Platform Tracking</div>
+                <div class="feature-description">
+                    Track content spread across platforms and analyze propagation patterns in real-time
+                </div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <div class="feature-title">Community Reporting</div>
+                <div class="feature-description">
+                    Crowdsourced verification system with user reports and community fact-checking
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'text';
+        let analysisInProgress = false;
+
+        // Initialize dashboard
+        async function loadDashboard() {
+            try {
+                const response = await fetch('http://localhost:8000/dashboard/');
+                const data = await response.json();
+                
+                document.getElementById('totalAnalyses').textContent = data.total_analyses || 0;
+                document.getElementById('fakeDetectionRate').textContent = Math.round((data.fake_detection_rate || 0) * 100) + '%';
+                document.getElementById('communityReports').textContent = data.community_reports || 0;
+                document.getElementById('verifiedSources').textContent = data.verified_sources || 0;
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+            }
+        }
+
+        // Switch between tabs
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        // Analyze content
+        async function analyzeContent() {
+            if (analysisInProgress) return;
+            
+            analysisInProgress = true;
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            // Show loading state
+            analyzeBtn.disabled = true;
+            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            
+            resultsContainer.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Running comprehensive analysis...</p>
+                    <p style="font-size: 0.9rem; color: #718096;">This may take a few moments</p>
+                </div>
+            `;
+            
+            try {
+                let formData = new FormData();
+                let endpoint = '';
+                
+                if (currentTab === 'text') {
+                    const text = document.getElementById('textInput').value;
+                    const language = document.getElementById('textLanguage').value;
+                    const source = document.getElementById('textSource').value;
+                    
+                    if (!text.trim()) {
+                        throw new Error('Please enter text to analyze');
+                    }
+                    
+                    formData.append('text', text);
+                    formData.append('lang', language);
+                    if (source) formData.append('source_url', source);
+                    endpoint = 'http://localhost:8000/analyze_text/';
+                } else {
+                    const fileInput = document.getElementById(currentTab + 'File');
+                    const sourceInput = document.getElementById(currentTab + 'Source');
+                    
+                    if (!fileInput.files[0]) {
+                        throw new Error('Please select a file to analyze');
+                    }
+                    
+                    formData.append('file', fileInput.files[0]);
+                    if (sourceInput.value) formData.append('source_url', sourceInput.value);
+                    endpoint = `http://localhost:8000/analyze_${currentTab}/`;
+                }
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Analysis failed: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                displayResults(result);
+                
+            } catch (error) {
+                resultsContainer.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        ${error.message}
+                    </div>
+                `;
+            } finally {
+                analyzeBtn.disabled = false;
+                analyzeBtn.innerHTML = '<i class="fas fa-search"></i> Analyze Content';
+                analysisInProgress = false;
+            }
+        }
+
+        // Display analysis results
+        function displayResults(result) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            
+            // Determine risk level and colors
+            let riskLevel, riskIcon, riskText, cardColor, textColor;
+            
+            if (result.fake_score >= 0.7) {
+                // High Risk - Red
+                riskLevel = 'high-risk';
+                riskIcon = '🚨';
+                riskText = 'FAKE DETECTED';
+                cardColor = '#fee2e2';
+                textColor = '#dc2626';
+            } else if (result.fake_score >= 0.4) {
+                // Medium Risk - Orange
+                riskLevel = 'medium-risk';
+                riskIcon = '⚠️';
+                riskText = 'SUSPICIOUS';
+                cardColor = '#fef3c7';
+                textColor = '#d97706';
+            } else {
+                // Low Risk - Green
+                riskLevel = 'low-risk';
+                riskIcon = '✅';
+                riskText = 'AUTHENTIC';
+                cardColor = '#d1fae5';
+                textColor = '#059669';
+            }
+            
+            resultsContainer.innerHTML = `
+                <div class="result-card" style="background: ${cardColor}; border-left-color: ${textColor};">
+                    <div class="result-header">
+                        <div class="result-title" style="color: ${textColor}; font-weight: bold; font-size: 1.4rem;">
+                            ${riskIcon} ${riskText}
+                        </div>
+                        <div class="confidence-score ${riskLevel}" style="background: ${textColor}; color: white; font-weight: bold;">
+                            ${Math.round(result.fake_score * 100)}%
+                        </div>
+                    </div>
+                    
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Analysis Type:</span>
+                            <span class="detail-value">${result.analysis_type || currentTab}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Confidence:</span>
+                            <span class="detail-value">${Math.round((result.confidence || result.fake_score) * 100)}%</span>
+                        </div>
+                        ${result.credibility_score ? `
+                        <div class="detail-item">
+                            <span class="detail-label">Source Credibility:</span>
+                            <span class="detail-value">${Math.round(result.credibility_score * 100)}%</span>
+                        </div>
+                        ` : ''}
+                        ${result.blockchain_hash ? `
+                        <div class="detail-item">
+                            <span class="detail-label">Blockchain Hash:</span>
+                            <span class="detail-value" style="font-family: monospace; font-size: 0.9rem;">${result.blockchain_hash}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    ${result.explanation ? `
+                    <div class="result-details" style="margin-top: 20px;">
+                        <h4 style="color: #2d3748; margin-bottom: 15px;">📊 Detailed Analysis</h4>
+                        <div style="background: #f7fafc; padding: 15px; border-radius: 10px; border-left: 4px solid ${textColor};">
+                            <p style="color: ${textColor}; font-weight: bold;"><strong>Summary:</strong> ${result.explanation.summary || 'Analysis completed'}</p>
+                            ${result.explanation.detailed_analysis ? `
+                                <div style="margin-top: 15px;">
+                                    <p><strong>Technical Indicators:</strong></p>
+                                    <ul style="margin-left: 20px; margin-top: 5px;">
+                                        ${result.explanation.detailed_analysis.technical_indicators ? 
+                                            result.explanation.detailed_analysis.technical_indicators.map(indicator => 
+                                                `<li>${indicator}</li>`
+                                            ).join('') : '<li>No specific indicators</li>'}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${result.explanation && result.explanation.recommendations ? `
+                    <div class="recommendations" style="background: ${cardColor}; border-left: 4px solid ${textColor};">
+                        <h3 style="color: ${textColor};">💡 Recommendations</h3>
+                        ${result.explanation.recommendations.map(rec => `
+                            <div class="recommendation-item">
+                                <span class="recommendation-icon">${rec.includes('⚠️') ? '⚠️' : rec.includes('🔍') ? '🔍' : rec.includes('📚') ? '📚' : rec.includes('✅') ? '✅' : '💡'}</span>
+                                <span class="recommendation-text" style="color: ${textColor}; font-weight: 500;">${rec}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    ` : ''}
+                </div>
+                
+                ${result.cultural_context ? `
+                <div class="result-card">
+                    <h4 style="color: #2d3748; margin-bottom: 15px;">🌍 Cultural Context Analysis</h4>
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Misinterpretation Risk:</span>
+                            <span class="detail-value">${Math.round((result.cultural_context.misinterpretation_risk || 0) * 100)}%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Context Sensitivity:</span>
+                            <span class="detail-value">${Math.round((result.cultural_context.context_sensitivity || 0) * 100)}%</span>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${result.psychological_impact ? `
+                <div class="result-card">
+                    <h4 style="color: #2d3748; margin-bottom: 15px;">🧠 Psychological Impact Analysis</h4>
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Manipulation Score:</span>
+                            <span class="detail-value">${Math.round((result.psychological_impact.manipulation_score || 0) * 100)}%</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Manipulation Intent:</span>
+                            <span class="detail-value">${result.psychological_impact.manipulation_intent || 'Unknown'}</span>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+                
+                ${result.traceability ? `
+                <div class="result-card">
+                    <h4 style="color: #2d3748; margin-bottom: 15px;">🔗 Content Traceability</h4>
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Platforms Detected:</span>
+                            <span class="detail-value">${result.traceability.platforms_count || 0}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Virality Score:</span>
+                            <span class="detail-value">${Math.round((result.traceability.virality_metrics?.virality_score || 0) * 100)}%</span>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            
+            // Update dashboard
+            loadDashboard();
+        }
+
+        // File upload handling
+        document.getElementById('imageFile').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                document.querySelector('#imageTab .file-upload p').textContent = `Selected: ${e.target.files[0].name}`;
+            }
+        });
+
+        document.getElementById('videoFile').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                document.querySelector('#videoTab .file-upload p').textContent = `Selected: ${e.target.files[0].name}`;
+            }
+        });
+
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                document.querySelector('#audioTab .file-upload p').textContent = `Selected: ${e.target.files[0].name}`;
+            }
+        });
+
+        // Drag and drop handling
+        function setupDragAndDrop() {
+            const fileUploads = document.querySelectorAll('.file-upload');
+            
+            fileUploads.forEach(upload => {
+                upload.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    upload.classList.add('dragover');
+                });
+                
+                upload.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    upload.classList.remove('dragover');
+                });
+                
+                upload.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    upload.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        const fileInput = upload.parentElement.querySelector('input[type="file"]');
+                        if (fileInput) {
+                            fileInput.files = files;
+                            upload.querySelector('p').textContent = `Selected: ${files[0].name}`;
+                        }
+                    }
+                });
+            });
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+            setupDragAndDrop();
+        });
+    </script>
+</body>
+</html>

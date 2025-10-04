@@ -1,0 +1,47 @@
+# Paths
+paths:
+  # Backward-compatible individual roots
+  dfdc_root: data/DFDC_subset
+  havdf_root: data/HAVDF_subset
+  # New: arbitrary dataset list (name + root)
+  datasets:
+    - {name: DFDC, root: data/DFDC_subset}
+    - {name: HAVDF, root: data/HAVDF_subset}
+  manifests_dir: ML/artifacts/manifests
+  extracted_frames_dir: ML/artifacts/frames
+  extracted_audio_dir: ML/artifacts/audio
+  models_dir: ML/artifacts/models
+  preds_dir: ML/artifacts/preds
+
+# Splits
+splits:
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  seed: 42
+
+# Preprocessing
+preprocess:
+  frames_per_video: 16
+  fps: 4
+  audio_sr: 16000
+  audio_seconds: 5
+
+# Training
+train:
+  visual:
+    model: efficientnet_b0
+    image_size: 224
+    epochs: 3
+    batch_size: 32
+    lr: 3e-4
+  audio:
+    model_name: facebook/wav2vec2-base-960h
+    epochs: 2
+    batch_size: 8
+    lr: 5e-5
+
+# Fusion
+fusion:
+  visual_weight: 0.6
+  audio_weight: 0.4

@@ -1,0 +1,31 @@
+# Database Configuration
+DATABASE_URL=postgresql://username:password@localhost:5432/fake_news_db
+REDIS_URL=redis://localhost:6379
+
+# API Keys
+NEWS_API_KEY=your_news_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+TWITTER_API_KEY=your_twitter_api_key_here
+TWITTER_API_SECRET=your_twitter_api_secret_here
+
+# Blockchain Configuration
+ETHEREUM_RPC_URL=https://mainnet.infura.io/v3/your_project_id
+IPFS_GATEWAY_URL=https://ipfs.io/ipfs/
+
+# Security
+SECRET_KEY=your_secret_key_here
+JWT_SECRET=your_jwt_secret_here
+
+# External Services
+FACTCHECK_API_KEY=your_factcheck_api_key_here
+POLITIFACT_API_KEY=your_politifact_api_key_here
+
+# Application Settings
+DEBUG=True
+LOG_LEVEL=INFO
+MAX_FILE_SIZE=50MB
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8001
+
+# Monitoring
+SENTRY_DSN=your_sentry_dsn_here
+PROMETHEUS_ENABLED=True
